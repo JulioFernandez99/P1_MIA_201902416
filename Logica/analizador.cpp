@@ -2,8 +2,15 @@
 #include <regex>
 #include <string>
 #include <set>
+#include <sstream> // Para stringstream
+#include <fstream> // Para ofstream
 #include "analizador.h"
 using namespace std;
+
+bool fileExists(const std::string& filename) {
+    std::ifstream file(filename);
+    return file.good();
+}
 
 void Analizador::ProcessMkDisk(const smatch &match) {
    cout << "Procesando comando mkdisk:" << endl;
@@ -37,12 +44,66 @@ void Analizador::ProcessMkDisk(const smatch &match) {
             // Verificar si ya hemos encontrado este parámetro antes
             if (foundParams.find(paramName) == foundParams.end()) {
                 cout << "Nombre del parámetro: " << paramName << ", Valor del parámetro: " << paramValue << endl;
+                if (paramName == "s") {
+                    cout << "entrooooo------" << paramValue << endl;
+                    sizeDisk = stoi(paramValue);
+                } else if (paramName == "f"){
+                    transform(paramValue.begin(), paramValue.end(), paramValue.begin(), ::tolower);
+                    fitDisk = paramValue;
+                }else if (paramName == "u"){
+                    transform(paramValue.begin(), paramValue.end(), paramValue.begin(), ::tolower);
+                    unitDisk = paramValue;
+                }else if (paramName == "path"){
+                    pathDisk = paramValue;
+                }
                 foundParams.insert(paramName); // Agregar el nombre del parámetro al conjunto
+
             }
 
             ++paramIterator;
         }
     }
+
+    if (unitDisk == "k" ){
+        sizeDisk = sizeDisk * 1024;
+    }else if (unitDisk == "m"){
+        sizeDisk = sizeDisk * 1024 * 1024;
+    }
+    cout << "========Parámetros encontrados========" << endl;
+    cout << "Tamaño del disco: " << sizeDisk << endl;
+    cout << "Ajuste del disco: " << fitDisk << endl;
+    cout << "Unidad del disco: " << unitDisk << endl;
+    cout << "Ruta del disco: " << pathDisk << endl;
+
+
+
+    //? =============================Creando disco=============================
+    int counter = 1; // Contador para nombres de archivo
+
+    while (true) {
+        // Construir el nombre del archivo único
+        stringstream filename;
+        filename << pathDisk << "/Disco" << counter << ".dsk";
+
+        // Verificar si el archivo existe
+        if (!fileExists(filename.str())) {
+            // El archivo no existe, se puede usar este nombre
+            ofstream outfile(filename.str());
+            if (outfile) {
+                cout << "Archivo creado: " << filename.str() << std::endl;
+                break; // Salir del bucle una vez que se haya creado el archivo
+            } else {
+                cerr << "Error al crear el archivo: " << filename.str() << std::endl;
+            }
+        }
+
+        // Si el archivo existe, intentar con el siguiente nombre
+        ++counter;
+    }
+
+
+    
+
 }
 
 
