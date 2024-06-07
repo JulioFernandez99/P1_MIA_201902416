@@ -78,6 +78,8 @@ void Analizador::ProcessMkDisk(const smatch &match) {
 
 
     //? =============================Creando disco=============================
+    
+
     int counter = 1; // Contador para nombres de archivo
 
     while (true) {
@@ -88,19 +90,22 @@ void Analizador::ProcessMkDisk(const smatch &match) {
         // Verificar si el archivo existe
         if (!fileExists(filename.str())) {
             // El archivo no existe, se puede usar este nombre
-            ofstream outfile(filename.str());
+            ofstream outfile(filename.str(), ios::binary);
             if (outfile) {
-                cout << "Archivo creado: " << filename.str() << std::endl;
+                // Escribir el arreglo en el archivo
+                vector<char> buffer(sizeDisk, 0); // Inicializa un vector de chars con el tamaño deseado
+                outfile.write(buffer.data(), buffer.size()); // Escribe los datos en el archivo
+                cout << "Archivo binario creado con un arreglo de tamaño " << sizeDisk << ": " << filename.str() << endl;
                 break; // Salir del bucle una vez que se haya creado el archivo
             } else {
-                cerr << "Error al crear el archivo: " << filename.str() << std::endl;
+                cerr << "Error al crear el archivo: " << filename.str() << endl;
+                
             }
         }
 
         // Si el archivo existe, intentar con el siguiente nombre
         ++counter;
     }
-
 
     
 

@@ -11,6 +11,12 @@ public:
     string ReadLine();
     void ProcessInput(const string &);
     void ProcessMkDisk(const smatch & );
+
+    //! =================Variables mkdisk=================
+    int sizeDisk=0;
+    string fitDisk= "ff";
+    string unitDisk= "M";
+    string pathDisk="";
 };
 
 #endif // ARRAY_H
