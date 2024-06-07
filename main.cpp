@@ -12,4 +12,4 @@ int main() {
     analizador.Run();  // Llamada a la función miembro estática
     return 0;
 }
- 3
+ 
