@@ -4,8 +4,35 @@
 #include <set>
 #include <sstream> // Para stringstream
 #include <fstream> // Para ofstream
+#include <ctime>
+#include <iomanip> // Para std::put_time
 #include "analizador.h"
+
 using namespace std;
+
+bool Analizador::InsertarMBR(const string &filePath, const Mbr &mbr) {
+    // Abrir el archivo en modo binario para escritura
+    std::ofstream file(filePath, std::ios::binary);
+    if (!file) {
+        std::cerr << "Error al abrir el archivo: " << filePath << std::endl;
+        return false;
+    }
+
+    // Establecer la posición de escritura al principio del archivo
+    file.seekp(0, std::ios::beg);
+
+    // Escribir el MBR en la posición actual del archivo
+    file.write(reinterpret_cast<const char*>(&mbr), sizeof(Mbr));
+    if (!file) {
+        std::cerr << "Error al escribir en el archivo: " << filePath << std::endl;
+        return false;
+    }
+
+    file.close();
+    return true;
+}
+
+
 
 bool fileExists(const std::string& filename) {
     std::ifstream file(filename);
@@ -13,7 +40,13 @@ bool fileExists(const std::string& filename) {
 }
 
 void Analizador::ProcessMkDisk(const smatch &match) {
-   cout << "Procesando comando mkdisk:" << endl;
+    //! =================Variables mkdisk=================
+    sizeDisk=0;
+    fitDisk= 'f';
+    unitDisk= "M";
+    pathDisk="";
+
+    cout << "Procesando comando mkdisk:" << endl;
 
     // Expresión regular para capturar los parámetros y sus valores
     regex reParam(R"((-\w+)=(("[^"]*")|(\S+)))");
@@ -45,11 +78,10 @@ void Analizador::ProcessMkDisk(const smatch &match) {
             if (foundParams.find(paramName) == foundParams.end()) {
                 cout << "Nombre del parámetro: " << paramName << ", Valor del parámetro: " << paramValue << endl;
                 if (paramName == "s") {
-                    cout << "entrooooo------" << paramValue << endl;
                     sizeDisk = stoi(paramValue);
                 } else if (paramName == "f"){
                     transform(paramValue.begin(), paramValue.end(), paramValue.begin(), ::tolower);
-                    fitDisk = paramValue;
+                    fitDisk = paramValue[0];
                 }else if (paramName == "u"){
                     transform(paramValue.begin(), paramValue.end(), paramValue.begin(), ::tolower);
                     unitDisk = paramValue;
@@ -86,7 +118,6 @@ void Analizador::ProcessMkDisk(const smatch &match) {
         // Construir el nombre del archivo único
         stringstream filename;
         filename << pathDisk << "/Disco" << counter << ".dsk";
-
         // Verificar si el archivo existe
         if (!fileExists(filename.str())) {
             // El archivo no existe, se puede usar este nombre
@@ -107,6 +138,28 @@ void Analizador::ProcessMkDisk(const smatch &match) {
         ++counter;
     }
 
+    pathDisk +="/Disco"+to_string(counter)+".dsk";
+    // // Obtener la fecha y hora actual del sistema
+    time_t tiempo_actual = time(nullptr);
+    tm* tiempo_descompuesto = localtime(&tiempo_actual);
+
+    // Formatear la fecha y hora como una cadena
+    ostringstream oss;
+    oss << put_time(tiempo_descompuesto, "%Y-%m-%d %H:%M:%S");
+    string fecha_creacion = oss.str();
+
+
+    Mbr mbr;
+    
+    mbr.mbr_tamano = sizeDisk;
+    mbr.mbr_fecha_creacion = fecha_creacion;
+    mbr.mbr_disk_signature = rand() % 1000 + 1;
+    mbr.mbr_fit = fitDisk;
+    mbr.mbr_partition_1.part_status = '0';
+    mbr.mbr_partition_2.part_status = '0';
+    mbr.mbr_partition_3.part_status = '0';
+    mbr.mbr_partition_4.part_status = '0';
+    //InsertarMBR(pathDisk , mbr);
     
 
 }
