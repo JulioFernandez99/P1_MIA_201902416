@@ -33,8 +33,6 @@ void Clear()
 void scanner::start()
 {
     system("clear");
-        cout << "------------------------------INGRESE UN COMANDO------------------------------\n" << endl;
-        cout << "--------------------------------exit para salir-------------------------------\n" << endl;
         cout << ">>";
         while (true)
         {
@@ -52,8 +50,6 @@ void scanner::start()
             cout << "\nPresione Enter para continuar...." << endl;
             getline(cin,texto);
             Clear();
-            cout << "------------------------------INGRESE UN COMANDO------------------------------\n" << endl;
-            cout << "--------------------------------exit para salir-------------------------------\n" << endl;
             cout << ">>";
         }
 }
@@ -65,8 +61,8 @@ void scanner::functions(string token, vector<string> tks)
         cout << "FUNCION MKDISK" << endl;
         disco.mkdisk(tks); // [-size=10, -u=m, -path=/home/hola.dk]
     }else if(compare(token, "RMDISK")){
-        cout << "FUNCION RMDISK" << endl;
-        //disco.rmdisk(tks);
+        
+        disco.rmdisk(tks);
     }else if(compare(token, "FDISK")){
         cout << "FUNCION FDISK" << endl;
         disco.fdisk(tks);

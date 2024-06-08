@@ -92,6 +92,26 @@ void Disk::mkdisk(vector<string> tokens){
     }  
 }
 
+void Disk::rmdisk(vector<string> context){
+    for (string token:context){
+        string tk = token.substr(0, token.find("="));
+        token.erase(0,tk.length()+1);
+        if (scan.compare(tk, "path"))
+        {
+            if (scan.confirmar("Desea eliminar el disco en la ruta: "+token+"\n"))
+            {
+                if (remove(token.c_str())==0)
+                {
+                    scan.respuesta("RMDISK","Disco eliminado exitosamente");
+                }else{
+                    scan.errores("RMDISK","Error al eliminar el disco,posiblemente no existe");
+                }
+            }
+        }
+    }
+
+}
+
 // Crear funcion makeDisk
 void Disk::makeDisk(string s, string f, string u, string path){\
     Structs::MBR disco; 
@@ -185,7 +205,6 @@ void Disk::makeDisk(string s, string f, string u, string path){\
     }
 
 }
-
 
 void Disk::fdisk(vector<string> context){
     bool dlt = false;
@@ -364,7 +383,6 @@ Structs::Partition Disk::findby(Structs::MBR mbr, string name, string path) {
     throw runtime_error("la partición no existe");
 }
 
-
 void Disk::generatepartition(string s, string u, string p, string t, string f, string n, string a){
     try{
         startValue = 0;
@@ -492,7 +510,6 @@ void Disk::generatepartition(string s, string u, string p, string t, string f, s
         return;
     }
 };
-
 
 vector<Structs::Partition> Disk::getPartitions(Structs::MBR mbr){
     vector<Structs::Partition> partitions;
@@ -714,3 +731,4 @@ void Disk::addpartition(string add, string u, string n, string p) {
     }
 
 }
+
