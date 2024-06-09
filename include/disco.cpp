@@ -112,6 +112,69 @@ void Disk::rmdisk(vector<string> context){
 
 }
 
+void Disk::getmbr(vector<string> context){
+    cout << "=======getmbr=======" << endl;
+    for (string token:context){
+        string tk = token.substr(0, token.find("="));
+        token.erase(0,tk.length()+1);
+        if (scan.compare(tk, "path"))
+        {
+            FILE *file = fopen(token.c_str(), "rb");
+            if (file == NULL)
+            {
+                scan.errores("GETMBR","El disco no existe");
+                return;
+            }
+            Structs::MBR mbr;
+            rewind(file);
+            fread(&mbr, sizeof(Structs::MBR), 1, file);
+            fclose(file);
+
+            cout << "Size: " << mbr.mbr_tamano << endl;
+            cout << "Fecha: " << mbr.mbr_fecha_creacion << endl;
+            cout << "Fit: " << mbr.disk_fit << endl;
+            cout << "Disk Signature: " << mbr.mbr_disk_signature << endl;
+            cout << "Bits del MBR: " << sizeof(Structs::MBR) << endl;
+            cout << "Path: " << token << endl;
+            cout <<"\n";
+            cout << "=============Particiones=============" << endl;
+            cout << "*Particion 1: " << endl;
+            cout << "   Status: " << mbr.mbr_Partition_1.part_status << endl;
+            cout << "   Type: " << mbr.mbr_Partition_1.part_type << endl;
+            cout << "   Fit: " << mbr.mbr_Partition_1.part_fit << endl;
+            cout << "   Start: " << mbr.mbr_Partition_1.part_start << endl;
+            cout << "   Size: " << mbr.mbr_Partition_1.part_size << endl;
+            cout << "   Name: " << mbr.mbr_Partition_1.part_name << endl;
+            cout <<"\n";
+            cout << "*Particion 2: " << endl;
+            cout << "   Status: " << mbr.mbr_Partition_2.part_status << endl;
+            cout << "   Type: " << mbr.mbr_Partition_2.part_type << endl;
+            cout << "   Fit: " << mbr.mbr_Partition_2.part_fit << endl;
+            cout << "   Start: " << mbr.mbr_Partition_2.part_start << endl;
+            cout << "   Size: " << mbr.mbr_Partition_2.part_size << endl;
+            cout << "   Name: " << mbr.mbr_Partition_2.part_name << endl;
+            cout <<"\n";
+            cout << "*Particion 3: " << endl;
+            cout << "   Status: " << mbr.mbr_Partition_3.part_status << endl;
+            cout << "   Type: " << mbr.mbr_Partition_3.part_type << endl;
+            cout << "   Fit: " << mbr.mbr_Partition_3.part_fit << endl;
+            cout << "   Start: " << mbr.mbr_Partition_3.part_start << endl;
+            cout << "   Size: " << mbr.mbr_Partition_3.part_size << endl;
+            cout << "   Name: " << mbr.mbr_Partition_3.part_name << endl;
+            cout <<"\n";
+            cout << "*Particion 4: " << endl;
+            cout << "   Status: " << mbr.mbr_Partition_4.part_status << endl;
+            cout << "   Type: " << mbr.mbr_Partition_4.part_type << endl;
+            cout << "   Fit: " << mbr.mbr_Partition_4.part_fit << endl;
+            cout << "   Start: " << mbr.mbr_Partition_4.part_start << endl;
+            cout << "   Size: " << mbr.mbr_Partition_4.part_size << endl;
+            cout << "   Name: " << mbr.mbr_Partition_4.part_name << endl;
+
+        }
+    }
+}
+
+
 // Crear funcion makeDisk
 void Disk::makeDisk(string s, string f, string u, string path){\
     Structs::MBR disco; 

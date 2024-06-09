@@ -26,6 +26,7 @@ class Disk{
         void makeDisk(string s, string f, string u, string p);
         void rmdisk(vector<string> context);
         void fdisk(vector<string> context);
+        void getmbr(vector<string> context);
         void generatepartition(string s, string u, string p, string t, string f, string n, string a);
         void deletepartition(string d, string p, string n);
         void addpartition(string add, string u, string n, string p);

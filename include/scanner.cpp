@@ -56,22 +56,22 @@ void scanner::start()
     
 void scanner::functions(string token, vector<string> tks)
 {
-    if (compare(token, "MKDISK"))
-    {
+    if (compare(token, "MKDISK")){
         cout << "FUNCION MKDISK" << endl;
-        disco.mkdisk(tks); // [-size=10, -u=m, -path=/home/hola.dk]
+        disco.mkdisk(tks); 
+    }else if(compare(token, "mbr")){ 
+        disco.getmbr(tks);
     }else if(compare(token, "RMDISK")){
-        
         disco.rmdisk(tks);
     }else if(compare(token, "FDISK")){
-        cout << "FUNCION FDISK" << endl;
+        //cout << "FUNCION FDISK" << endl;
         disco.fdisk(tks);
     }else if(compare(token, "MOUNT")){
-        cout << "FUNCION MOUNT" << endl;
+        //cout << "FUNCION MOUNT" << endl;
         mount.mount(tks);
     }else if(compare(token, "UNMOUNT")){
-        cout << "FUNCION *UNMOUNT" << endl;
-        //mount.unmount(tks);
+        //cout << "FUNCION *UNMOUNT" << endl;
+        mount.unmount(tks);
     }else if(compare(token, "MKFS")){
         cout << "FUNCION MKFS" << endl;
         //FileSystem fileSystem = FileSystem(mount);

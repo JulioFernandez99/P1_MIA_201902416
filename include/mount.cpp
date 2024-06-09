@@ -77,7 +77,7 @@ void Mount::mount(string p, string n){
                         mounted[i].mpartitions[j].letter = alfabeto.at(j);
                         strcpy(mounted[i].mpartitions[j].name, n.c_str());
                         string re = to_string(i + 1) + alfabeto.at(j);
-                        shared.response("MOUNT", "se ha realizado correctamente el mount -id=65" + re);
+                        shared.response("MOUNT", "se ha realizado correctamente el mount -id=16" + re);
                         return;
                     }
                 }
@@ -94,7 +94,7 @@ void Mount::mount(string p, string n){
                         mounted[i].mpartitions[j].letter = alfabeto.at(j);
                         strcpy(mounted[i].mpartitions[j].name, n.c_str());
                         string re = to_string(i + 1) + alfabeto.at(j);
-                        shared.response("MOUNT", "se ha realizado correctamente el mount -id=65" + re);
+                        shared.response("MOUNT", "se ha realizado correctamente el mount -id=16" + re);
                         return;
                     }
                 }
@@ -118,4 +118,85 @@ void Mount::listmount() {
             }
         }
     }
+}
+
+void Mount::unmount(vector<string> command){
+    if(command.empty()){
+        shared.handler("UNMOUNT", "requiere ciertos parámetros obligatorios");
+        return;
+    }
+    vector<string> required = { "id" };
+    string idcomand;
+    for (auto current : command){
+        string id = shared.lower(current.substr(0, current.find("=")));
+        current.erase(0, id.length() + 1);
+        if(shared.compare(id, "id")){
+            if(count(required.begin(), required.end(), id)){
+                auto itr = find(required.begin(), required.end(), id);
+                required.erase(itr);
+                idcomand = current;
+                
+            }
+        }
+    }
+    if (required.size() != 0) {
+        shared.handler("UNMOUNT", "requiere ciertos parámetros obligatorios");
+        return;
+    }
+    
+    unmount(idcomand);
+}
+
+void Mount::unmount(string id){
+
+   
+    //extraer el tercer caracter del id
+    char idd = id.at(2);
+    //convertir el caracter a entero
+    int particion = idd - 48;
+
+    //extraer del cuarto caracter en adelante
+    string disco = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/"+ id.substr(4)+".dsk";
+    
+    cout << particion << endl;
+    cout << disco << endl;
+
+    
+    //obtener el mbr del disco
+    Structs::MBR disk;
+    FILE *validate = fopen(disco.c_str(), "r");
+    if (validate == NULL) {
+        shared.handler("UNMOUNT", "Disco no existe");
+    }
+    rewind(validate);
+    fread(&disk, sizeof(Structs::MBR), 1, validate);
+    fclose(validate);
+    
+    
+    if (particion == 1) {
+        disk.mbr_Partition_1.part_status = '0';
+    } else if (particion == 2) {
+        disk.mbr_Partition_2.part_status = '0';
+    } else if (particion == 3) {
+        disk.mbr_Partition_3.part_status = '0';
+    } else if (particion == 4) {
+        disk.mbr_Partition_4.part_status = '0';
+    }else{
+        shared.handler("UNMOUNT", "partición no existe");
+    }
+    
+
+
+    FILE *discoo = fopen(disco.c_str(), "r+");
+    if (discoo == NULL) {
+        shared.handler("UNMOUNT", "Disco no existe");
+    }
+    rewind(discoo);
+    fwrite(&disk, sizeof(Structs::MBR), 1, discoo);
+    fclose(discoo);
+    
+
+    
+
+
 }
