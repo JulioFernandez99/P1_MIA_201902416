@@ -172,6 +172,8 @@ void Disk::getmbr(vector<string> context){
 
         }
     }
+
+    system("dot -Tpng reporte.dot -o reporte.png");
 }
 
 

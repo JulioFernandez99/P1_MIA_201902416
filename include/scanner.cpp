@@ -1,10 +1,9 @@
 #include "../lib/scanner.h"
 #include "../lib/disco.h"
 #include "../lib/mount.h"
-// #include "../lib/report.h"
-// #include "../lib/filesystem.h"
-// #include "../lib/users.h"
-// #include "../lib/filemanager.h"
+
+
+
 #include <iostream>
 #include <stdlib.h>
 #include <locale>
@@ -17,10 +16,9 @@ using namespace std;
 
 Disk disco;
 Mount mount;
-// Report report;
-// Users user;
-// Shared shared;
-// FileManager filemanager;
+
+Shared shared;
+
 bool logued = false;
 scanner::scanner()
 {
@@ -80,7 +78,7 @@ void scanner::functions(string token, vector<string> tks)
     }else if(compare(token, "LOGIN")){
         cout << "FUNCION LOGIN" << endl;
         if(logued){
-            //shared.handler("LOGIN", " ya existe una sesion abierta");
+            shared.handler("LOGIN", " ya existe una sesion abierta");
             return;
         }
         //logued = user.login(tks,mount);
