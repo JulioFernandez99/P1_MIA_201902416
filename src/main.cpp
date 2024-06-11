@@ -12,7 +12,7 @@ int main() {
 //? rmdisk -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk
 
 //! fdisk
-//? fdisk -s=100 -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Particion4 #id=062Disco1
+//? fdisk -s=100 -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Particion1 #id=062Disco3
 
 //! mount
 //? mount -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Particion4

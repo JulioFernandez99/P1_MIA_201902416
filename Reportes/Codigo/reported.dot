@@ -1,0 +1,112 @@
+digraph G {
+  a0 [shape=none label=<<TABLE cellspacing="10" cellpadding="10" style="rounded" bgcolor="cornflowerblue">
+  <TR>
+  <TD bgcolor="coral1">Particion Primaria</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_status</TD>
+  <TD bgcolor="coral1">1</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_type</TD>
+  <TD bgcolor="coral1">P</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_fit</TD>
+  <TD bgcolor="coral1">W</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_start</TD>
+  <TD bgcolor="coral1">136</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_size</TD>
+  <TD bgcolor="coral1">102400</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_name</TD>
+  <TD bgcolor="coral1">Particion4</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="coral1">Particion Primaria</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_status</TD>
+  <TD bgcolor="coral1">1</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_type</TD>
+  <TD bgcolor="coral1">P</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_fit</TD>
+  <TD bgcolor="coral1">W</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_start</TD>
+  <TD bgcolor="coral1">102536</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_size</TD>
+  <TD bgcolor="coral1">102400</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_name</TD>
+  <TD bgcolor="coral1">Particion3</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="coral1">Particion</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_status</TD>
+  <TD bgcolor="coral1">0</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_type</TD>
+  <TD bgcolor="coral1">----</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_fit</TD>
+  <TD bgcolor="coral1">----</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_start</TD>
+  <TD bgcolor="coral1">-1</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_size</TD>
+  <TD bgcolor="coral1">0</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_name</TD>
+  <TD bgcolor="coral1">----</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="coral1">Particion</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_status</TD>
+  <TD bgcolor="coral1">48</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_type</TD>
+  <TD bgcolor="coral1">----</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_fit</TD>
+  <TD bgcolor="coral1">----</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_start</TD>
+  <TD bgcolor="coral1">-1</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_size</TD>
+  <TD bgcolor="coral1">0</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="darkslategray3">part_name</TD>
+  <TD bgcolor="coral1">----</TD>
+  </TR>
+</TABLE>>];
+}

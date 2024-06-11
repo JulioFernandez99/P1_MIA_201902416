@@ -1,0 +1,19 @@
+digraph G {
+  a0 [shape=none label=<<TABLE cellspacing="10" cellpadding="10" style="rounded" bgcolor="red">
+  <TR>
+  <TD bgcolor="yellow">REPORTE MBR</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="yellow">mbr_tamano</TD>
+  <TD bgcolor="yellow">3072000</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="yellow">mbr_fecha_creacion</TD>
+  <TD bgcolor="yellow">2024/06/10 22:35:25</TD>
+  </TR>
+  <TR>
+  <TD bgcolor="yellow">mbr_disk_signature</TD>
+  <TD bgcolor="yellow">9929</TD>
+  </TR>
+</TABLE>>];
+}

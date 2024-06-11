@@ -112,8 +112,8 @@ void Disk::rmdisk(vector<string> context){
 
 }
 
-void Disk::getmbr(vector<string> context){
-    cout << "=======getmbr=======" << endl;
+void Disk::grafoMbr(vector<string> context){
+    Structs::MBR mbr;
     for (string token:context){
         string tk = token.substr(0, token.find("="));
         token.erase(0,tk.length()+1);
@@ -125,13 +125,449 @@ void Disk::getmbr(vector<string> context){
                 scan.errores("GETMBR","El disco no existe");
                 return;
             }
-            Structs::MBR mbr;
+            
+            rewind(file);
+            fread(&mbr, sizeof(Structs::MBR), 1, file);
+            fclose(file);
+
+        }
+    }
+
+
+    //convertir la fecha a un formato legible
+    struct tm *tm;
+    tm = localtime(&mbr.mbr_fecha_creacion);
+    char fecha [20];
+    strftime(fecha, 20, "%Y/%m/%d %H:%M:%S", tm);
+    std::string fechaStr(fecha);
+
+    // Nombre del archivo DOT
+    string nombreArchivo = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporte.dot";
+
+    // Contenido del grafo en formato DOT
+    string contenidoDOT = "digraph G {\n";
+    contenidoDOT += "  a0 [shape=none label=<<TABLE cellspacing=\"10\" cellpadding=\"10\" style=\"rounded\" bgcolor=\"red\">\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"yellow\">REPORTE MBR</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"yellow\">mbr_tamano</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"yellow\">"+std::to_string(mbr.mbr_tamano)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"yellow\">mbr_fecha_creacion</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"yellow\">"+(fechaStr)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"yellow\">mbr_disk_signature</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"yellow\">"+std::to_string(mbr.mbr_disk_signature)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    
+    contenidoDOT += "</TABLE>>];\n";
+    contenidoDOT += "}\n";
+
+    // Escribir el contenido en el archivo
+    ofstream archivo(nombreArchivo);
+    if (archivo.is_open()) {
+        archivo << contenidoDOT;
+        archivo.close();
+        cout << "Se ha escrito el archivo " << nombreArchivo << " exitosamente." << endl;
+    } else {
+        cout << "No se pudo abrir el archivo " << nombreArchivo << " para escribir." << endl;
+    }
+
+    system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporte.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reporte.png");
+}
+
+
+void Disk::grafoParticiones(vector<string> context){
+    Structs::MBR mbr;
+    for (string token:context){
+        string tk = token.substr(0, token.find("="));
+        token.erase(0,tk.length()+1);
+        if (scan.compare(tk, "path"))
+        {
+            FILE *file = fopen(token.c_str(), "rb");
+            if (file == NULL)
+            {
+                scan.errores("GETMBR","El disco no existe");
+                return;
+            }
+            
+            rewind(file);
+            fread(&mbr, sizeof(Structs::MBR), 1, file);
+            fclose(file);
+
+        }
+    }
+
+    
+     //convertir la fecha a un formato legible
+    struct tm *tm;
+    tm = localtime(&mbr.mbr_fecha_creacion);
+    char fecha [20];
+    strftime(fecha, 20, "%Y/%m/%d %H:%M:%S", tm);
+    std::string fechaStr(fecha);
+
+    // Nombre del archivo DOT
+    string nombreArchivo = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reported.dot";
+
+    // Contenido del grafo en formato DOT
+    string contenidoDOT = "digraph G {\n";
+    contenidoDOT += "  a0 [shape=none label=<<TABLE cellspacing=\"10\" cellpadding=\"10\" style=\"rounded\" bgcolor=\"cornflowerblue\">\n";
+    
+    //particion 1
+    contenidoDOT += "  <TR>\n";
+    if (mbr.mbr_Partition_1.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Primaria</TD>\n";
+    }else if (mbr.mbr_Partition_1.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Extendida</TD>\n";
+    }else if (mbr.mbr_Partition_1.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Logica</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_status</TD>\n";
+
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::string(1,mbr.mbr_Partition_1.part_status)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_type</TD>\n";
+    //imprimir el tipo de particion
+    if (mbr.mbr_Partition_1.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">P</TD>\n";
+    }else if (mbr.mbr_Partition_1.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">E</TD>\n";
+    }else if (mbr.mbr_Partition_1.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">L</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_fit</TD>\n";
+
+    if (mbr.mbr_Partition_1.part_fit == 'B')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">B</TD>\n";
+    }else if (mbr.mbr_Partition_1.part_fit == 'F')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">F</TD>\n";    
+    }else if (mbr.mbr_Partition_1.part_fit == 'W')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">W</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_start</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_1.part_start)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_size</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_1.part_size)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_name</TD>\n";
+    if (mbr.mbr_Partition_1.part_name[0] == '\0')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::string(mbr.mbr_Partition_1.part_name)+"</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+    //particion 2
+    contenidoDOT += "  <TR>\n";
+    if (mbr.mbr_Partition_2.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Primaria</TD>\n";
+    }else if (mbr.mbr_Partition_2.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Extendida</TD>\n";
+    }else if (mbr.mbr_Partition_2.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Logica</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_status</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::string(1,mbr.mbr_Partition_2.part_status)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_type</TD>\n";
+    //imprimir el tipo de particion
+    if (mbr.mbr_Partition_2.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">P</TD>\n";
+    }else if (mbr.mbr_Partition_2.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">E</TD>\n";
+    }else if (mbr.mbr_Partition_2.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">L</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_fit</TD>\n";
+    if (mbr.mbr_Partition_2.part_fit == 'B')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">B</TD>\n";
+    }else if (mbr.mbr_Partition_2.part_fit == 'F')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">F</TD>\n";    
+    }else if (mbr.mbr_Partition_2.part_fit == 'W')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">W</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_start</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_2.part_start)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_size</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_2.part_size)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    
+     contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_name</TD>\n";
+    if (mbr.mbr_Partition_2.part_name[0] == '\0')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::string(mbr.mbr_Partition_2.part_name)+"</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+
+
+
+    //particion 3
+    contenidoDOT += "  <TR>\n";
+    if (mbr.mbr_Partition_3.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Primaria</TD>\n";
+    }else if (mbr.mbr_Partition_3.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Extendida</TD>\n";
+    }else if (mbr.mbr_Partition_3.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Logica</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_status</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::string(1,mbr.mbr_Partition_3.part_status)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_type</TD>\n";
+    //imprimir el tipo de particion
+    if (mbr.mbr_Partition_3.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">P</TD>\n";
+    }else if (mbr.mbr_Partition_3.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">E</TD>\n";
+    }else if (mbr.mbr_Partition_3.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">L</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_fit</TD>\n";
+    if (mbr.mbr_Partition_3.part_fit == 'B')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">B</TD>\n";
+    }else if (mbr.mbr_Partition_3.part_fit == 'F')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">F</TD>\n";    
+    }else if (mbr.mbr_Partition_3.part_fit == 'W')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">W</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_start</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_3.part_start)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_size</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_3.part_size)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    
+     contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_name</TD>\n";
+    if (mbr.mbr_Partition_3.part_name[0] == '\0')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::string(mbr.mbr_Partition_3.part_name)+"</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+
+    //particion 4
+    contenidoDOT += "  <TR>\n";
+    if (mbr.mbr_Partition_4.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Primaria</TD>\n";
+    }else if (mbr.mbr_Partition_4.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Extendida</TD>\n";
+    }else if (mbr.mbr_Partition_4.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion Logica</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">Particion</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_status</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_4.part_status)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_type</TD>\n";
+    //imprimir el tipo de particion
+    if (mbr.mbr_Partition_4.part_type == 'P')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">P</TD>\n";
+    }else if (mbr.mbr_Partition_4.part_type == 'E')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">E</TD>\n";
+    }else if (mbr.mbr_Partition_4.part_type == 'L')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">L</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_fit</TD>\n";
+    if (mbr.mbr_Partition_4.part_fit == 'B')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">B</TD>\n";
+    }else if (mbr.mbr_Partition_4.part_fit == 'F')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">F</TD>\n";    
+    }else if (mbr.mbr_Partition_4.part_fit == 'W')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">W</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+    
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_start</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_4.part_start)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+
+    contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_size</TD>\n";
+    contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::to_string(mbr.mbr_Partition_4.part_size)+"</TD>\n";
+    contenidoDOT += "  </TR>\n";
+    
+     contenidoDOT += "  <TR>\n";
+    contenidoDOT += "  <TD bgcolor=\"darkslategray3\">part_name</TD>\n";
+    if (mbr.mbr_Partition_4.part_name[0] == '\0')
+    {
+        contenidoDOT += "  <TD bgcolor=\"coral1\">----</TD>\n";
+    }else{
+        contenidoDOT += "  <TD bgcolor=\"coral1\">"+std::string(mbr.mbr_Partition_4.part_name)+"</TD>\n";
+    }
+    contenidoDOT += "  </TR>\n";
+
+
+    
+    contenidoDOT += "</TABLE>>];\n";
+    contenidoDOT += "}\n";
+
+
+    
+
+
+
+
+
+
+    ofstream archivo(nombreArchivo);
+    if (archivo.is_open()) {
+        archivo << contenidoDOT;
+        archivo.close();
+        cout << "Se ha escrito el archivo " << nombreArchivo << " exitosamente." << endl;
+    } else {
+        cout << "No se pudo abrir el archivo " << nombreArchivo << " para escribir." << endl;
+    }
+
+    system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reported.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reported.png");
+
+}
+
+void Disk::getmbr(vector<string> context){
+    cout << "=======getmbr=======" << endl;
+    Structs::MBR mbr;
+    for (string token:context){
+        string tk = token.substr(0, token.find("="));
+        token.erase(0,tk.length()+1);
+        if (scan.compare(tk, "path"))
+        {
+            FILE *file = fopen(token.c_str(), "rb");
+            if (file == NULL)
+            {
+                scan.errores("GETMBR","El disco no existe");
+                return;
+            }
+            
             rewind(file);
             fread(&mbr, sizeof(Structs::MBR), 1, file);
             fclose(file);
 
             cout << "Size: " << mbr.mbr_tamano << endl;
-            cout << "Fecha: " << mbr.mbr_fecha_creacion << endl;
+
+            //convertir la fecha a un formato legible
+            struct tm *tm;
+            tm = localtime(&mbr.mbr_fecha_creacion);
+            char fecha [20];
+            strftime(fecha, 20, "%Y/%m/%d %H:%M:%S", tm);
+
+            cout << "Fecha: " << fecha << endl;
+            
+            
             cout << "Fit: " << mbr.disk_fit << endl;
             cout << "Disk Signature: " << mbr.mbr_disk_signature << endl;
             cout << "Bits del MBR: " << sizeof(Structs::MBR) << endl;
@@ -173,7 +609,8 @@ void Disk::getmbr(vector<string> context){
         }
     }
 
-    system("dot -Tpng reporte.dot -o reporte.png");
+    grafoMbr(context);
+    grafoParticiones(context);
 }
 
 
