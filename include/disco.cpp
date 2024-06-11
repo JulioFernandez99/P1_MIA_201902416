@@ -179,7 +179,6 @@ void Disk::grafoMbr(vector<string> context){
     system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporte.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reporte.png");
 }
 
-
 void Disk::grafoParticiones(vector<string> context){
     Structs::MBR mbr;
     for (string token:context){
@@ -535,6 +534,53 @@ void Disk::grafoParticiones(vector<string> context){
     }
 
     system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reported.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reported.png");
+
+}
+
+void Disk::rep(vector<string> context){
+    string id = "";
+    string path = "";
+    string name = "";
+
+
+    bool error = false;
+    for (string token:context){
+        string tk = token.substr(0, token.find("="));
+        token.erase(0,tk.length()+1);
+
+    
+
+
+        if (scan.compare(tk, "path"))
+        {
+            if (path.empty())
+            {
+                path = token;
+            }else{
+                scan.errores("REP","parametro PATH repetido en el comando"+tk);
+                error = true;
+                break;
+            }
+        }else if (scan.compare(tk, "name"))
+        {
+            if (name.empty())
+            {
+                name = token;
+            }else{
+                scan.errores("REP","parametro NAME repetido en el comando"+tk);
+                error = true;
+                break;
+            }
+        }else{
+            scan.errores("REP","no se esperaba el parametro "+tk);
+            error = true;
+            break;
+        }
+    }
+
+    cout << "ID: " << id << endl;
+    cout << "Path: " << path << endl;
+    cout << "Name: " << name << endl;
 
 }
 

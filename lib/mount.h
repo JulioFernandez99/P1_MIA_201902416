@@ -34,7 +34,7 @@ class Mount
     void unmount(string id);
     void listmount();
 
-    Structs::Partition getMount(string id, string *p);
+    Structs::Partition getmount(string id, string *p);
 
     private:
     Disk dsk;

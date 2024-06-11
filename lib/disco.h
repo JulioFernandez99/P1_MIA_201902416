@@ -28,6 +28,7 @@ class Disk{
         
         void fdisk(vector<string> context);
         void getmbr(vector<string> context);
+        void rep(vector<string> context);
         void grafoParticiones(vector<string> context);
         void grafoMbr(vector<string> context);
 

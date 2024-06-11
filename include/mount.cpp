@@ -114,7 +114,7 @@ void Mount::listmount() {
     for (int i = 0; i < 99; i++) {
         for (int j = 0; j < 26; j++) {
             if (mounted[i].mpartitions[j].status == '1') {
-                cout << "> 65" << i + 1 << alfabeto.at(j) << ", " << mounted[i].mpartitions[j].name << endl;
+                cout << "> 16" << i + 1 << alfabeto.at(j) << ", " << mounted[i].mpartitions[j].name << endl;
             }
         }
     }
@@ -199,4 +199,40 @@ void Mount::unmount(string id){
     
 
 
+}
+
+
+Structs::Partition Mount::getmount(string id, string *p) {
+
+    if (!(id[0] == '6' && id[1] == '5')) {
+        throw runtime_error("el primer identificador no es válido");
+    }
+    string past = id;
+    char letter = id[id.length() - 1];
+    id.erase(0, 2);
+    id.pop_back();
+    int i = stoi(id) - 1;
+    if (i < 0) {
+        throw runtime_error("identificador de disco inválido");
+    }
+
+    for (int j = 0; j < 26; j++) {
+        if (mounted[i].mpartitions[j].status == '1') {
+            if (mounted[i].mpartitions[j].letter == letter) {
+
+                FILE *validate = fopen(mounted[i].path, "r");
+                if (validate == NULL) {
+                    throw runtime_error("disco no existente");
+                }
+
+                Structs::MBR disk;
+                rewind(validate);
+                fread(&disk, sizeof(Structs::MBR), 1, validate);
+                fclose(validate);
+                *p = mounted[i].path;
+                return dsk.findby(disk, mounted[i].mpartitions[j].name, mounted[i].path);
+            }
+        }
+    }
+    throw runtime_error("partición no existente");
 }
