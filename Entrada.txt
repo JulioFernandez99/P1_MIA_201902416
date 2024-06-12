@@ -1,0 +1,3 @@
+mkdisk -s=3000 -u=K -path="/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco3".dsk
+mkdisk -s=3000 -u=K -path="/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco4".dsk
+mkdisk -s=3000 -u=K -path="/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco5".dsk

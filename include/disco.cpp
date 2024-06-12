@@ -24,7 +24,9 @@ void Disk::mkdisk(vector<string> tokens){
     bool error = false;
     for(string token:tokens){
         string tk = token.substr(0, token.find("=")); // -f=b
+        
         token.erase(0,tk.length()+1); // b
+        
         if(scan.compare(tk, "f")){
             if(f.empty()){
                 f = token; // f = b
@@ -48,8 +50,11 @@ void Disk::mkdisk(vector<string> tokens){
             }
         }else if (scan.compare(tk, "path"))
         {
+            
             if (path.empty())
             {
+
+                
                 path = token;
             }else{
                 scan.errores("MKDISK","parametro PATH repetido en el comando"+tk);
@@ -142,7 +147,7 @@ void Disk::grafoMbr(vector<string> context){
     std::string fechaStr(fecha);
 
     // Nombre del archivo DOT
-    string nombreArchivo = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporte.dot";
+    string nombreArchivo = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporteMbr.dot";
 
     // Contenido del grafo en formato DOT
     string contenidoDOT = "digraph G {\n";
@@ -176,7 +181,7 @@ void Disk::grafoMbr(vector<string> context){
         cout << "No se pudo abrir el archivo " << nombreArchivo << " para escribir." << endl;
     }
 
-    system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporte.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reporte.png");
+    system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporteMbr.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reporteMbr.png");
 }
 
 void Disk::grafoParticiones(vector<string> context){
@@ -209,7 +214,7 @@ void Disk::grafoParticiones(vector<string> context){
     std::string fechaStr(fecha);
 
     // Nombre del archivo DOT
-    string nombreArchivo = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reported.dot";
+    string nombreArchivo = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporteParts.dot";
 
     // Contenido del grafo en formato DOT
     string contenidoDOT = "digraph G {\n";
@@ -533,7 +538,7 @@ void Disk::grafoParticiones(vector<string> context){
         cout << "No se pudo abrir el archivo " << nombreArchivo << " para escribir." << endl;
     }
 
-    system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reported.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reported.png");
+    system("dot -Tpng /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Codigo/reporteParts.dot -o /home/julio_fernandez/Escritorio/P1_MIA_201902416/Reportes/Images/reporteParts.png");
 
 }
 

@@ -25,34 +25,34 @@ digraph G {
   </TR>
   <TR>
   <TD bgcolor="darkslategray3">part_name</TD>
-  <TD bgcolor="coral1">Particion4</TD>
+  <TD bgcolor="coral1">Particion1</TD>
   </TR>
   <TR>
-  <TD bgcolor="coral1">Particion Primaria</TD>
+  <TD bgcolor="coral1">Particion</TD>
   </TR>
   <TR>
   <TD bgcolor="darkslategray3">part_status</TD>
-  <TD bgcolor="coral1">1</TD>
+  <TD bgcolor="coral1">0</TD>
   </TR>
   <TR>
   <TD bgcolor="darkslategray3">part_type</TD>
-  <TD bgcolor="coral1">P</TD>
+  <TD bgcolor="coral1">----</TD>
   </TR>
   <TR>
   <TD bgcolor="darkslategray3">part_fit</TD>
-  <TD bgcolor="coral1">W</TD>
+  <TD bgcolor="coral1">----</TD>
   </TR>
   <TR>
   <TD bgcolor="darkslategray3">part_start</TD>
-  <TD bgcolor="coral1">102536</TD>
+  <TD bgcolor="coral1">-1</TD>
   </TR>
   <TR>
   <TD bgcolor="darkslategray3">part_size</TD>
-  <TD bgcolor="coral1">102400</TD>
+  <TD bgcolor="coral1">0</TD>
   </TR>
   <TR>
   <TD bgcolor="darkslategray3">part_name</TD>
-  <TD bgcolor="coral1">Particion3</TD>
+  <TD bgcolor="coral1">----</TD>
   </TR>
   <TR>
   <TD bgcolor="coral1">Particion</TD>

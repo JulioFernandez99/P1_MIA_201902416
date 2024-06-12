@@ -2,9 +2,7 @@
 #include "../lib/disco.h"
 #include "../lib/mount.h"
 
-#include "../lib/filesystem.h"
-#include "../lib/users.h"
-#include "../lib/filemanager.h"
+
 #include <iostream>
 #include <stdlib.h>
 #include <locale>
@@ -17,9 +15,8 @@ using namespace std;
 
 Disk disco;
 Mount mount;
-FileManager filemanager;
 Shared shared;
-Users user;
+
 
 bool logued = false;
 scanner::scanner()
@@ -74,8 +71,8 @@ void scanner::functions(string token, vector<string> tks)
         mount.unmount(tks);
     }else if(compare(token, "MKFS")){
         cout << "FUNCION MKFS" << endl;
-        FileSystem fileSystem = FileSystem(mount);
-        fileSystem.mkfs(tks);
+        // FileSystem fileSystem = FileSystem(mount);
+        // fileSystem.mkfs(tks);
     }else if(compare(token, "REP")){
         disco.rep(tks);
     }else if(compare(token, "LOGIN")){
@@ -222,7 +219,11 @@ vector<string> scanner::split_tokens(string text){
                 if (c=='\"')
                 {
                     estado = 3;
-                }else{
+                    continue;
+                }else if(c==' '){
+                    continue;
+                }    
+                else{   
                     estado = 4;
                 }
                 
@@ -230,6 +231,7 @@ vector<string> scanner::split_tokens(string text){
                 if (c=='\"')
                 {
                     estado = 4;
+                    continue;
                 }
             }else if (estado==4 && c=='\"')
             {
@@ -247,7 +249,6 @@ vector<string> scanner::split_tokens(string text){
     }
     return tokens;
 }
-
 string scanner::upper(string a){
     string up="";
     for(char &a: a){
