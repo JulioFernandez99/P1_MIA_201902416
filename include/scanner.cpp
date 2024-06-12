@@ -34,16 +34,17 @@ void scanner::start()
         while (true)
         {
             string texto;
-            getline(cin, texto);
+            getline(cin, texto); //comando de entrada
             Clear();
             if (compare(texto, "exit"))
             {
-                break;
+                break; //si es exit se sale
             }
-            string tk = token(texto); // mkdisk
-            texto.erase(0,tk.length()+1);
-            vector<string> tks = split_tokens(texto); //[-size=10, -u=m, -path=/home/hola.dk]
-            functions(tk, tks);
+            string tk = token(texto); //obtiene el token por medio de un automata
+            texto.erase(0,tk.length()+1); 
+
+            vector<string> tks = split_tokens(texto); // divide el texto en comando y tokens como un automata
+            functions(tk, tks); //manda el comando y tokens a la funcion
             cout << "\nPresione Enter para continuar...." << endl;
             getline(cin,texto);
             Clear();
@@ -171,26 +172,6 @@ string scanner::token(string text)
     return tkn;
 }
 
-vector<string> scanner::split(string text, string text_split)
-{
-    vector<string> cadena;
-    if (text.empty())
-    {
-        return cadena;
-    }
-    
-    int n = text.length();
-    char char_array[n + 1];
-    strcpy(char_array, text.c_str());
-    char* point = strtok(char_array, text_split.c_str());
-    while (point!=NULL)
-    {
-        cadena.push_back(string(point));
-        point = strtok(NULL, text_split.c_str());
-    }
-    return cadena;
-}
-
 vector<string> scanner::split_tokens(string text){
     vector<string> tokens;
     if (text.empty())
@@ -249,6 +230,7 @@ vector<string> scanner::split_tokens(string text){
     }
     return tokens;
 }
+
 string scanner::upper(string a){
     string up="";
     for(char &a: a){

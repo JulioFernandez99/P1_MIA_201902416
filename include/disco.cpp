@@ -17,45 +17,46 @@ Disk::Disk(){
 }
 
 void Disk::mkdisk(vector<string> tokens){
+    //! tokens recibe los parametros del comando
     string size = "";
     string u = "";
     string path = "";
     string f = "";
     bool error = false;
     for(string token:tokens){
-        string tk = token.substr(0, token.find("=")); // -f=b
+        string tk = token.substr(0, token.find("=")); // separa el token por el igual
         
-        token.erase(0,tk.length()+1); // b
+        token.erase(0,tk.length()+1); //obtengo el valor del token
         
         if(scan.compare(tk, "f")){
             if(f.empty()){
-                f = token; // f = b
+                f = token; //asigno el valor del token a la variable f
             }else{
                 scan.errores("MKDISK", "El parametro F ya fue ingresado en el comando"+tk);
             }
-        }else if(scan.compare(tk, "s")){
+        }else if(scan.compare(tk, "s")){    //comparo si el token es igual a s
             if (size.empty())
             {
-                size = token;
+                size = token;   //asigno el valor del token a la variable size
             }else{
                 scan.errores("MKDISK","parametro SIZE repetido en el comando"+tk);
             }
-        }else if (scan.compare(tk, "u"))
+        }else if (scan.compare(tk, "u"))    //comparo si el token es igual a u
         {
             if (u.empty())
             {
-                u = token;
+                u = token;  //asigno el valor del token a la variable u
             }else{
                 scan.errores("MKDISK","parametro U repetido en el comando"+tk);
             }
-        }else if (scan.compare(tk, "path"))
+        }else if (scan.compare(tk, "path")) //comparo si el token es igual a path
         {
             
             if (path.empty())
             {
 
                 
-                path = token;
+                path = token;   // asigno el valor del token a la variable path
             }else{
                 scan.errores("MKDISK","parametro PATH repetido en el comando"+tk);
             }    
@@ -65,20 +66,20 @@ void Disk::mkdisk(vector<string> tokens){
             break;
         }
     }
-    if (error){
+    if (error){ //verifico que se haya ingresado los parametros correctamente
         return;
     }
 
-    if (f.empty())
+    if (f.empty()) //verifico que el parametro f no este vacio
     {
         f = "BF";
     }
-    if (u.empty())
+    if (u.empty()) //verifico que el parametro u no este vacio
     {
         u = "M";
     }
 
-    if (path.empty() && size.empty())
+    if (path.empty() && size.empty()) //verifico que los parametros path y size no esten vacios
     {
         scan.errores("MKDISK", "se requiere parametro Path y Size para este comando");
     }else if(path.empty()){
@@ -93,19 +94,20 @@ void Disk::mkdisk(vector<string> tokens){
     {
         scan.errores("MKDISK","valores de parametro U no esperados");
     }else{
-        makeDisk(size,f,u,path);
+        makeDisk(size,f,u,path);//sino hay errores se crea el disco en makeDisk
     }  
 }
 
 void Disk::rmdisk(vector<string> context){
-    for (string token:context){
-        string tk = token.substr(0, token.find("="));
-        token.erase(0,tk.length()+1);
-        if (scan.compare(tk, "path"))
+    //! context recibe los parametros del comando
+    for (string token:context){ //recorro los parametros
+        string tk = token.substr(0, token.find("=")); //separo el token por el igual
+        token.erase(0,tk.length()+1);   //obtengo el valor del token
+        if (scan.compare(tk, "path")) //comparo si el token es igual a path
         {
             if (scan.confirmar("Desea eliminar el disco en la ruta: "+token+"\n"))
             {
-                if (remove(token.c_str())==0)
+                if (remove(token.c_str())==0) //elimino el disco (funcion remove de la libreria stdlib.h)
                 {
                     scan.respuesta("RMDISK","Disco eliminado exitosamente");
                 }else{
@@ -590,10 +592,11 @@ void Disk::rep(vector<string> context){
 }
 
 void Disk::getmbr(vector<string> context){
+    //! context recibe los parametros del comando
     cout << "=======getmbr=======" << endl;
     Structs::MBR mbr;
     for (string token:context){
-        string tk = token.substr(0, token.find("="));
+        string tk = token.substr(0, token.find("=")); //separo el token por el igual
         token.erase(0,tk.length()+1);
         if (scan.compare(tk, "path"))
         {
@@ -667,75 +670,83 @@ void Disk::getmbr(vector<string> context){
 
 // Crear funcion makeDisk
 void Disk::makeDisk(string s, string f, string u, string path){\
-    Structs::MBR disco; 
+    Structs::MBR disco; //hago una instancia de la estructura MBR
     try{
-        int size = stoi(s); // stoi = string to int
+        int size = stoi(s); // stoi = string to int, esto convierte el string a un entero
         if (size <=0){
             scan.errores("MKDISK","Size debe ser mayor a 0");
         }
-        if(scan.compare(u,"M")){
+        if(scan.compare(u,"M")){//si u es igual a M (esto es el tamaño del disco en MB)
             size = size * 1024 * 1024;
         }
-        if(scan.compare(u,"K")){
+        if(scan.compare(u,"K")){//si u es igual a K (esto es el tamaño del disco en KB)
             size = size * 1024;
         }
-        f = f.substr(0,1); // BF -> B
-        disco.mbr_tamano = size;
-        disco.mbr_fecha_creacion = time(nullptr);
-        disco.disk_fit = toupper(f[0]);
-        disco.mbr_disk_signature = rand() % 9999 + 100;
+        f = f.substr(0,1); // BF -> B, aca tomo la primera letra de f
+        disco.mbr_tamano = size;    //asigno el tamaño del disco
+        disco.mbr_fecha_creacion = time(nullptr);   //asigno la fecha de creacion del disco
+        disco.disk_fit = toupper(f[0]); //asigno el ajuste del disco
+        disco.mbr_disk_signature = rand() % 9999 + 100; //asigno un numero aleatorio de 4 digitos
 
-        FILE *file = fopen(path.c_str(),"r"); // c_str() = convertir string a char
+        FILE *file = fopen(path.c_str(),"r"); // c_str() = convertir string a char, esto es para abrir el archivo
         if(file != NULL){
-            scan.errores("MKDISK","El disco ya existe");
-            fclose(file);
+            scan.errores("MKDISK","El disco ya existe");//si el archivo ya existe, mando un error
+            fclose(file);//cierro el archivo
             return;
         }
 
-        disco.mbr_Partition_1 = Structs::Partition();
+        //inicializo las particiones
+        disco.mbr_Partition_1 = Structs::Partition(); 
         disco.mbr_Partition_2 = Structs::Partition();
         disco.mbr_Partition_3 = Structs::Partition();
         disco.mbr_Partition_4 = Structs::Partition();
 
-        string path2 = path;
+        string path2 = path; //creo una variable para guardar el path
         if(path.substr(0,1) == "\""){
-            path2 = path.substr(1,path.length()-2);
+            path2 = path.substr(1,path.length()-2); //quito las comillas del path
         };
 
-        if(!scan.compare(path.substr(path.find_last_of(".") + 1), "dsk")){
-            scan.errores("MKDISK","El disco debe ser de tipo .dsk");
+        if(!scan.compare(path.substr(path.find_last_of(".") + 1), "dsk")){ 
+            //verifico que el disco sea de tipo .dsk
+            scan.errores("MKDISK","El disco debe ser de tipo .dsk");//sino mando un error
             return;
         }
 
         try{
-            FILE *file = fopen(path.c_str(), "w+b");
-            if(file!=NULL){
-                fwrite("\0", 1, 1, file);
-                fseek(file, size-1, SEEK_SET);
-                fwrite("\0", 1, 1, file);
-                rewind(file);
-                fwrite(&disco, sizeof(Structs::MBR), 1, file);
-                fclose(file);
-            }else{
-                string comando1 = "mkdir -p \""+ path + "\"";
-                string comando2 = "rmdir \""+ path + "\"";
-                system(comando1.c_str());
-                system(comando2.c_str());
-                FILE *file = fopen(path.c_str(), "w+b");
-                fwrite("\0",1,1,file);
-                fseek(file, size - 1, SEEK_SET);
-                fwrite("\0", 1, 1, file);
-                rewind(file);
-                fwrite(&disco, sizeof(Structs::MBR),1, file);
-                fclose(file);
+            FILE *file = fopen(path.c_str(), "w+b");//creo el archivo
+            if(file!=NULL){ //si el archivo se creo correctamente
+
+                //                    inicio                       final
+                // archivo de n-bytes=[ 0                            0 ]
+                // se hace de esta forma para que el archivo tenga el tamaño especificado
+
+                fwrite("\0", 1, 1, file);   //escribo un byte en el archivo
+                fseek(file, size-1, SEEK_SET);  //me muevo al final del archivo
+                fwrite("\0", 1, 1, file);   //escribo un byte en el archivo
+                rewind(file);   //esto es para que el puntero del archivo vuelva al inicio
+                fwrite(&disco, sizeof(Structs::MBR), 1, file);  //escribo el MBR en el archivo al inicio
+                fclose(file);   //cierro el archivo
+            }else{ //si no se pudo crear el archivo
+                string comando1 = "mkdir -p \""+ path + "\""; //esta variable es para crear el directorio
+                string comando2 = "rmdir \""+ path + "\""; //esta elimina el directorio
+                system(comando1.c_str());   //ejecuto el comando para crear el directorio
+                system(comando2.c_str());   //ejecuto el comando para eliminar el directorio
+                FILE *file = fopen(path.c_str(), "w+b"); //vuelvo a intentar crear el archivo
+                fwrite("\0",1,1,file);  //escribo un byte en el archivo
+                fseek(file, size - 1, SEEK_SET);    //me muevo al final del archivo
+                fwrite("\0", 1, 1, file);   //escribo un byte en el archivo
+                rewind(file);   //esto es para que el puntero del archivo vuelva al inicio
+                fwrite(&disco, sizeof(Structs::MBR),1, file);   //escribo el MBR en el archivo al inicio
+                fclose(file);   //cierro el archivo
             }
 
-            FILE *imprimir = fopen(path.c_str(), "r");
+            // esto es para imprimir el disco creado
+            FILE *imprimir = fopen(path.c_str(), "r"); 
             if(imprimir!=NULL){
                 Structs::MBR discoI;
                 fseek(imprimir, 0, SEEK_SET);
-                fread(&discoI,sizeof(Structs::MBR), 1,imprimir);
-                struct tm *tm;
+                fread(&discoI,sizeof(Structs::MBR), 1,imprimir); //aca leo el MBR del disco y lo guardo en discoI
+                struct tm *tm; //esto es para convertir la fecha a un formato legible
                 tm = localtime(&discoI.mbr_fecha_creacion);
                 char mostrar_fecha [20];
                 strftime(mostrar_fecha, 20, "%Y/%m/%d %H:%M:%S", tm);                
