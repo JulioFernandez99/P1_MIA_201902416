@@ -6,19 +6,19 @@ int main() {
 }
 
 //! mkdik
-//? mkdisk -s=3000 -u=K -path="/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco2".dsk
+//? mkdisk -s=3000 -u=K -path="/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/DiscoF".dsk
 
 //! rmdisk
 //? rmdisk -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk
 
 //! fdisk
-//? fdisk -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Particion3 -t=E -u=K -s=100
-//? fdisk -delete=fast -name="Particion1" -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco2.dsk
+//? fdisk -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name="Ericka" -s=123
+//? fdisk -name="Ericka" -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -delete=fast
 //? fdisk -t=L -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Part3 -u=K -s=200
-//? fdisk -add=1 -s=1 -u=K -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Particion1
+//? fdisk -add=-3 -s=1 -u=K -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Ericka
 
 //! mount
-//? mount -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk -name=Particion3
+//? mount -path=/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/DiscoF.dsk -name=Particion1
 
 //! unmount
 //? unmount -id=651aDisco1

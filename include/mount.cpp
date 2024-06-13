@@ -120,85 +120,63 @@ void Mount::listmount() {
     }
 }
 
-void Mount::unmount(vector<string> command){
-    if(command.empty()){
-        shared.handler("UNMOUNT", "requiere ciertos parámetros obligatorios");
-        return;
-    }
-    vector<string> required = { "id" };
-    string idcomand;
-    for (auto current : command){
-        string id = shared.lower(current.substr(0, current.find("=")));
+void Mount::unmount(vector<string> context) {
+    vector<string> required = {"id"};
+    string id_;
+
+    for (int i = 0; i < context.size(); i++) {
+        string current = context.at(i);
+        string id = current.substr(0, current.find("="));
         current.erase(0, id.length() + 1);
-        if(shared.compare(id, "id")){
-            if(count(required.begin(), required.end(), id)){
-                auto itr = find(required.begin(), required.end(), id);
-                required.erase(itr);
-                idcomand = current;
-                
-            }
+
+        if (shared.compare(id, "id")) {
+            auto itr = find(required.begin(), required.end(), id);
+            required.erase(itr);
+            id_ = current;
         }
     }
     if (required.size() != 0) {
         shared.handler("UNMOUNT", "requiere ciertos parámetros obligatorios");
         return;
     }
-    
-    unmount(idcomand);
+    unmount(id_);
 }
 
-void Mount::unmount(string id){
+void Mount::unmount(string id) {
+    try {
+        if (!(id[0] == '6' && id[1] == '5')) {
+            throw runtime_error("el primer identificador no es válido");
+        }
+        string past = id;
+        char letter = id[id.length() - 1];
+        id.erase(0, 2);
+        id.pop_back();
+        int i = stoi(id) - 1;
+        if (i < 0) {
+            throw runtime_error("identificador de disco inválido");
+        }
 
-   
-    //extraer el tercer caracter del id
-    char idd = id.at(2);
-    //convertir el caracter a entero
-    int particion = idd - 48;
+        for (int j = 0; j < 26; j++) {
+            if (mounted[i].mpartitions[j].status == '1') {
+                if (mounted[i].mpartitions[j].letter == letter) {
 
-    //extraer del cuarto caracter en adelante
-    string disco = "/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/"+ id.substr(4)+".dsk";
-    
-    cout << particion << endl;
-    cout << disco << endl;
-
-    
-    //obtener el mbr del disco
-    Structs::MBR disk;
-    FILE *validate = fopen(disco.c_str(), "r");
-    if (validate == NULL) {
-        shared.handler("UNMOUNT", "Disco no existe");
+                    MountedPartition mp = MountedPartition();
+                    mounted[i].mpartitions[j] = mp;
+                    shared.response("UNMOUNT", "se ha realizado correctamente el unmount -id=" + past);
+                    return;
+                }
+            }
+        }
+        throw runtime_error("id no existente, no se desmontó nada");
     }
-    rewind(validate);
-    fread(&disk, sizeof(Structs::MBR), 1, validate);
-    fclose(validate);
-    
-    
-    if (particion == 1) {
-        disk.mbr_Partition_1.part_status = '0';
-    } else if (particion == 2) {
-        disk.mbr_Partition_2.part_status = '0';
-    } else if (particion == 3) {
-        disk.mbr_Partition_3.part_status = '0';
-    } else if (particion == 4) {
-        disk.mbr_Partition_4.part_status = '0';
-    }else{
-        shared.handler("UNMOUNT", "partición no existe");
+    catch (invalid_argument &e) {
+        shared.handler("UNMOUNT", "identificador de disco incorrecto, debe ser entero");
+        return;
     }
-    
-
-
-    FILE *discoo = fopen(disco.c_str(), "r+");
-    if (discoo == NULL) {
-        shared.handler("UNMOUNT", "Disco no existe");
+    catch (exception &e) {
+        shared.handler("UNMOUNT", e.what());
+        return;
     }
-    rewind(discoo);
-    fwrite(&disk, sizeof(Structs::MBR), 1, discoo);
-    fclose(discoo);
-    
-
-    
-
-
 }
 
 

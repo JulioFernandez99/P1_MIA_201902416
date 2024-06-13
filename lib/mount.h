@@ -29,7 +29,7 @@ class Mount
     MountedDisk mounted[99];
 
     void mount(vector<string> command);
-    void unmount(vector<string> command);
+    void unmount(vector<string> context);
     void mount(string path, string name);
     void unmount(string id);
     void listmount();

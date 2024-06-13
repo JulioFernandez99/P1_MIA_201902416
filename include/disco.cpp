@@ -770,7 +770,8 @@ void Disk::makeDisk(string s, string f, string u, string path){\
 
 }
 
-void Disk::fdisk(vector<string> context){
+void Disk::fdisk(vector<string> context)
+{
     bool dlt = false;
     for (string current : context) {
         string id = shared.lower(current.substr(0, current.find('=')));
@@ -825,8 +826,8 @@ void Disk::fdisk(vector<string> context){
                 }
             } else if (shared.compare(id, "add")) {
                 add = current;
-                if (count(required.begin(), required.end(), "s")) {
-                    auto itr = find(required.begin(), required.end(), "s");
+                if (count(required.begin(), required.end(), "size")) {
+                    auto itr = find(required.begin(), required.end(), "size");
                     required.erase(itr);
                     size = current;
                 }
@@ -843,7 +844,7 @@ void Disk::fdisk(vector<string> context){
         }
 
     } else {
-        vector<string> required = {"p", "n", "delete"};
+        vector<string> required = {"path", "name", "delete"};
         string _delete;
         string path;
         string name;
@@ -855,13 +856,13 @@ void Disk::fdisk(vector<string> context){
                 current = current.substr(1, current.length() - 2);
             }
 
-            if (shared.compare(id, "p")) {
+            if (shared.compare(id, "path")) {
                 if (count(required.begin(), required.end(), id)) {
                     auto itr = find(required.begin(), required.end(), id);
                     required.erase(itr);
                     path = current;
                 }
-            } else if (shared.compare(id, "n")) {
+            } else if (shared.compare(id, "name")) {
                 if (count(required.begin(), required.end(), id)) {
 
                     auto itr = find(required.begin(), required.end(), id);
@@ -881,7 +882,8 @@ void Disk::fdisk(vector<string> context){
             shared.handler("FDISK", "delete requiere parámetros obligatorios");
             return;
         }
-        //deletepartition(_delete, path, name);
+        cout << _delete << " " << path << " " << name << endl;
+        deletepartition(_delete, path, name);
     }
 }
 
@@ -1257,8 +1259,8 @@ void Disk::addpartition(string add, string u, string n, string p) {
                         if (i != 3) {
                             if (partitions[i + 1].part_start != 0) {
                                 if (((partitions[i].part_size + (i) +
-                                    partitions[i].part_start) <=
-                                    partitions[i + 1].part_start)) {
+                                      partitions[i].part_start) <=
+                                     partitions[i + 1].part_start)) {
                                     partitions[i].part_size += i;
                                     break;
                                 } else {
@@ -1267,7 +1269,7 @@ void Disk::addpartition(string add, string u, string n, string p) {
                             }
                         }
                         if ((partitions[i].part_size + i +
-                            partitions[i].part_start) <= disk.mbr_tamano) {
+                             partitions[i].part_start) <= disk.mbr_tamano) {
                             partitions[i].part_size += i;
                             break;
                         } else {
@@ -1295,4 +1297,104 @@ void Disk::addpartition(string add, string u, string n, string p) {
     }
 
 }
+void Disk::deletepartition(string d, string p, string n) {
+    try {
 
+        if (p.substr(0, 1) == "\"") {
+            p = p.substr(1, p.length() - 2);
+        }
+
+        if (!(shared.compare(d, "fast") || shared.compare(d, "full"))) {
+            throw runtime_error("-delete necesita valores específicos");
+        }
+
+        FILE *file = fopen(p.c_str(), "rb+");
+        if (file == NULL) {
+            throw runtime_error("disco no existente");
+        }
+
+        Structs::MBR disk;
+        rewind(file);
+        fread(&disk, sizeof(Structs::MBR), 1, file);
+
+        findby(disk, n, p);
+
+        Structs::Partition partitions[4];
+        partitions[0] = disk.mbr_Partition_1;
+        partitions[1] = disk.mbr_Partition_2;
+        partitions[2] = disk.mbr_Partition_3;
+        partitions[3] = disk.mbr_Partition_4;
+
+        Structs::Partition past;
+        bool fll = false;
+        for (int i = 0; i < 4; i++) {
+            if (partitions[i].part_status == '1') {
+                if (partitions[i].part_type == 'P') {
+                    if (shared.compare(partitions[i].part_name, n)) {
+                        if (shared.compare(d, "fast")) {
+                            partitions[i].part_status = '0';
+                        } else {
+                            past = partitions[i];
+                            partitions[i] = Structs::Partition();
+                            fll = true;
+                        }
+                        break;
+                    }
+                } else {
+                    if (shared.compare(partitions[i].part_name, n)) {
+                        if (shared.compare(d, "fast")) {
+                            partitions[i].part_status = '0';
+                        } else {
+                            past = partitions[i];
+                            partitions[i] = Structs::Partition();
+                            fll = true;
+                        }
+                        break;
+                    }
+                    vector<Structs::EBR> ebrs = getlogics(partitions[i], p);
+                    int count = 0;
+                    for (Structs::EBR ebr : ebrs) {
+                        if (shared.compare(ebr.part_name, n)) {
+                            ebr.part_status = '0';
+                        }
+                        fseek(file, ebr.part_start, SEEK_SET);
+                        fwrite(&ebr, sizeof(Structs::EBR), 1, file);
+                        count++;
+                    }
+                    shared.response("FDISK", "partición eliminada correctamente -" + d);
+                    return;
+                }
+            }
+        }
+
+        Structs::Partition aux;
+        for (int i = 3; i >= 0; i--) {
+            for (int j = 0; j < i; j++) {
+                if (partitions[j].part_status == '0') {
+                    aux = partitions[j];
+                    partitions[j] = partitions[j + 1];
+                    partitions[j + 1] = aux;
+                }
+            }
+        }
+
+        disk.mbr_Partition_1 = partitions[0];
+        disk.mbr_Partition_2 = partitions[1];
+        disk.mbr_Partition_3 = partitions[2];
+        disk.mbr_Partition_4 = partitions[3];
+
+        rewind(file);
+        fwrite(&disk, sizeof(Structs::MBR), 1, file);
+        if (fll) {
+            fseek(file, past.part_start, SEEK_SET);
+            int num = static_cast<int>(past.part_size / 2);
+            fwrite("\0", sizeof("\0"), num, file);
+        }
+        shared.response("FDISK", "partición eliminada correctamente -" + d);
+        fclose(file);
+    }
+    catch (exception &e) {
+        shared.handler("FDISK", e.what());
+        return;
+    }
+}

@@ -34,7 +34,7 @@ void scanner::start()
         while (true)
         {
             string texto;
-            getline(cin, texto); //comando de entrada
+            getline(cin, texto); //recibo el comando de entrada
             Clear();
             if (compare(texto, "exit"))
             {
@@ -63,6 +63,7 @@ void scanner::functions(string token, vector<string> tks)
         disco.rmdisk(tks);
     }else if(compare(token, "FDISK")){
         //cout << "FUNCION FDISK" << endl;
+        // ? fdisk -path="/home/julio_fernandez/Escritorio/P1_MIA_201902416/src/Disco1.dsk" -name=Particion1 -delete=fast 
         disco.fdisk(tks);
     }else if(compare(token, "MOUNT")){
         //cout << "FUNCION MOUNT" << endl;
@@ -318,3 +319,4 @@ void scanner::excec(string path){
     input_file.close();
     return;
 }
+
